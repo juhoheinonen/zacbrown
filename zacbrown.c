@@ -1,5 +1,9 @@
 #include "raylib.h"
-#include <stdio.h>
+//#include <stdio.h>
+#include "raymath.h"        // Required for: Vector2Clamp()
+
+#define MAX(a, b) ((a)>(b)? (a) : (b))
+#define MIN(a, b) ((a)<(b)? (a) : (b))
 
 #define MAX_FRAME_SPEED 15
 #define MIN_FRAME_SPEED 1
@@ -8,10 +12,20 @@ int main(void)
 {
     // Initialization
     //--------------------------------------------------------------------------------------
-    const int screenWidth = 800;
-    const int screenHeight = 450;
+    const int screenWidth = 2048;
+    const int screenHeight = 1600;
 
-    InitWindow(screenWidth, screenHeight, "Zachary Brownie - sprite animation");
+    // Enable config flags for resizable window and vertical synchro
+    SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_VSYNC_HINT);    
+    InitWindow((float)GetScreenWidth(), (float)GetScreenHeight(), "Zachary Brownie - sprite animation");
+    SetWindowMinSize(320, 240);
+
+    int gameScreenWidth = 640;
+    int gameScreenHeight = 480;
+
+    // Render texture initialization, used to hold the rendering result so we can easily resize it
+    RenderTexture2D target = LoadRenderTexture(gameScreenWidth, gameScreenHeight);
+    SetTextureFilter(target.texture, TEXTURE_FILTER_BILINEAR);  // Texture scale filter to use    
 
     // NOTE: Textures MUST be loaded after Window initialization (OpenGL context is required)
     Texture2D brownie_standing = LoadTexture("img/brownie.png"); // Texture loading
@@ -33,6 +47,8 @@ int main(void)
     // Main game loop
     while (!WindowShouldClose()) // Detect window close button or ESC key
     {
+        float scale = MIN((float)GetScreenWidth()/gameScreenWidth, (float)GetScreenHeight()/gameScreenHeight);
+
         // Update
         //----------------------------------------------------------------------------------
         framesCounter++;
@@ -62,33 +78,26 @@ int main(void)
 
         // Draw
         //----------------------------------------------------------------------------------
+        // Draw everything in the render texture, note this will not be rendered on screen, yet
+        BeginTextureMode(target);            
+
+            ClearBackground(RAYWHITE);
+            DrawTextureRec(brownie_standing, static_rec, position_standing, WHITE);
+
+            DrawTextureRec(brownie_running, frameRec, position, WHITE); // Draw part of the texture
+
+            DrawText("(c) Zachary Brownie sprite by Juho Antti Heinonen", screenWidth - 400, screenHeight - 20, 10, GRAY);
+
+        EndTextureMode();
+
         BeginDrawing();
-
-        ClearBackground(RAYWHITE);
-
-        // DrawTexture(brownie, 15, 40, WHITE);
-        // DrawRectangleLines(15, 40, brownie.width, brownie.height, LIME);
-        // DrawRectangleLines(15 + (int)frameRec.x, 40 + (int)frameRec.y, (int)frameRec.width, (int)frameRec.height, RED);
-
-        // DrawText("FRAME SPEED: ", 165, 210, 10, DARKGRAY);
-        // DrawText(TextFormat("%02i FPS", framesSpeed), 575, 210, 10, DARKGRAY);
-        // DrawText("PRESS RIGHT/LEFT KEYS to CHANGE SPEED!", 290, 240, 10, DARKGRAY);
-
-        // for (int i = 0; i < MAX_FRAME_SPEED; i++)
-        // {
-        //     if (i < framesSpeed)
-        //         DrawRectangle(250 + 21 * i, 205, 20, 20, RED);
-        //     DrawRectangleLines(250 + 21 * i, 205, 20, 20, MAROON);
-        // }
-
-        DrawTextureRec(brownie_standing, static_rec, position_standing, WHITE);
-
-        DrawTextureRec(brownie_running, frameRec, position, WHITE); // Draw part of the texture
-
-        DrawText("(c) Zachary Brownie sprite by Juho Antti Heinonen", screenWidth - 400, screenHeight - 20, 10, GRAY);
-
+            ClearBackground(BLACK);
+            DrawTexturePro(target.texture, (Rectangle){ 0.0f, 0.0f, (float)target.texture.width, (float)-target.texture.height },
+                           (Rectangle){ (GetScreenWidth() - ((float)gameScreenWidth*scale))*0.5f, (GetScreenHeight() - ((float)gameScreenHeight*scale))*0.5f,
+                           (float)gameScreenWidth*scale, (float)gameScreenHeight*scale }, (Vector2){ 0, 0 }, 0.0f, WHITE);
         EndDrawing();
-        //----------------------------------------------------------------------------------
+
+        //----------------------------------------------------------------------------------        
     }
 
     // De-Initialization
