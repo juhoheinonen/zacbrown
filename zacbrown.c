@@ -2,6 +2,8 @@
 //#include <stdio.h>
 #include "raymath.h"        // Required for: Vector2Clamp()
 
+#include "custom_types.h"
+
 #define MAX(a, b) ((a)>(b)? (a) : (b))
 #define MIN(a, b) ((a)<(b)? (a) : (b))
 
@@ -37,6 +39,18 @@ int main(void)
     Vector2 position = {350.0f, 280.0f};
     Rectangle frameRec = {0.0f, 0.0f, (float)brownie_running.width / 6, (float)brownie_running.height};
     int currentFrame = 0;
+
+    // initialize map here
+    game_tile game_map[20][10];
+    for (int x = 0; x < 20; x++) {
+        for (int y = 0; y < 10; y++) {
+            if (y == 0) {
+                game_map[x][y] = (game_tile){ .x = x, .y = y, .tile_type = BROWN_GROUND };
+            } else {
+                game_map[x][y] = (game_tile){ .x = x, .y = y, .tile_type = LIGHT_SKY };
+            }
+        }
+    }
 
     int framesCounter = 0;
     int framesSpeed = 8; // Number of spritesheet frames shown by second
@@ -82,7 +96,7 @@ int main(void)
         BeginTextureMode(target);            
 
             ClearBackground(RAYWHITE);
-            DrawTextureRec(brownie_standing, static_rec, position_standing, WHITE);
+            //DrawTextureRec(brownie_standing, static_rec, position_standing, WHITE);
 
             DrawTextureRec(brownie_running, frameRec, position, WHITE); // Draw part of the texture
 
