@@ -95,8 +95,22 @@ int main(void)
         {
             for (int y = 0; y < 8; y++)
             {
-                Color tile_color = (game_map[x][y].tile_type == BROWN_GROUND) ? BROWN : (Color){173, 216, 230, 255}; // light blue
-                DrawRectangle(x * 64, y * 64, 64, 64, tile_color);
+                Texture2D tile_texture;
+                if (game_map[x][y].tile_type == BROWN_GROUND)
+                {
+                    tile_texture = LoadTexture("img/brown_ground.png");
+                }
+                else if (game_map[x][y].tile_type == LIGHT_SKY)
+                {
+                    tile_texture = LoadTexture("img/light_sky.png");
+                }
+
+                //texture_rectangle = 
+                // Color tile_color = (game_map[x][y].tile_type == BROWN_GROUND) ? BROWN : (Color){173, 216, 230, 255}; // light blue
+                //DrawRectangle(x * 64, y * 64, 64, 64, tile_color);
+                Vector2 tile_position = {x * 64, y* 64};
+                Rectangle texture_rectangle = {(float)(x * 64), (float)(y * 64), tile_texture.width, tile_texture.height };
+                DrawTextureRec(tile_texture, texture_rectangle, tile_position, WHITE);
             }
         }
 
