@@ -1,12 +1,14 @@
+#include "raylib.h"
+
 enum tile_type {
     BROWN_GROUND,
     LIGHT_SKY
 };
 
 enum direction {
-    UP,
+    //UP,
     RIGHT,
-    DOWN,
+    //DOWN,
     LEFT
 };
 
@@ -17,8 +19,7 @@ typedef struct {
 } game_tile;
 
 typedef struct {
-    int x;
-    int y;
+    Vector2 position;
     int speed;
     enum direction direction;
 } main_character;

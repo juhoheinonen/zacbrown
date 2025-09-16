@@ -33,8 +33,8 @@ int main(void)
     Texture2D brownie_standing = LoadTexture("img/brownie.png");        // Texture loading
     Texture2D brownie_running = LoadTexture("img/brownie_running.png"); // Texture loading
 
-    Vector2 position_standing = {350.0f, 150.0f};
-    Rectangle static_rec = {0.0f, 0.0f, (float)brownie_standing.width, (float)brownie_standing.height};
+    //Vector2 position_standing = {350.0f, 150.0f};
+    // Rectangle static_rec = {0.0f, 0.0f, (float)brownie_standing.width, (float)brownie_standing.height};
 
     Vector2 position = {350.0f, 280.0f};
     Rectangle frameRec = {0.0f, 0.0f, (float)brownie_running.width / 6, (float)brownie_running.height};
@@ -56,6 +56,8 @@ int main(void)
             }
         }
     }
+
+    main_character player_character = { .position = { 1.0f, 6.0f}, .speed = 0, .direction = RIGHT };
 
     int framesCounter = 0;
     int framesSpeed = 10; // Number of spritesheet frames shown by second
@@ -115,7 +117,13 @@ int main(void)
         }
 
         // Draw the brownie above brown_ground (y=0)
-        DrawTextureRec(brownie_running, frameRec, (Vector2){position.x, 0}, WHITE);
+//        DrawTextureRec(brownie_running, frameRec, (Vector2){position.x, 0}, WHITE);
+
+        // todo: check if on ground or in air
+        if (player_character.speed == 0) {
+            Rectangle static_rec = {0.f, 0.f, (float)brownie_standing.width, (float)brownie_standing.height};
+            DrawTextureRec(brownie_standing, static_rec, (Vector2){player_character.position.x * 64, player_character.position.y * 64}, WHITE);
+        }
 
         DrawText("(c) Zachary Brownie sprite by Juho Antti Heinonen", screenWidth - 400, screenHeight - 20, 10, GRAY);
 
