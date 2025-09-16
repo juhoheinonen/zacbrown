@@ -58,7 +58,7 @@ int main(void)
     }
 
     int framesCounter = 0;
-    int framesSpeed = 8; // Number of spritesheet frames shown by second
+    int framesSpeed = 10; // Number of spritesheet frames shown by second
 
     SetTargetFPS(60); // Set our game to run at 60 frames-per-second
     //--------------------------------------------------------------------------------------
