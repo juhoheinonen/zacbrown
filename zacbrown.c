@@ -49,7 +49,7 @@ int main(void)
     {
         for (int y = 0; y < GAME_MAP_HEIGHT; y++)
         {
-            if (y >= 45)
+            if (y >= 56)
             {
                 game_map[x][y] = (game_tile){.x = x, .y = y, .tile_type = BROWN_GROUND};
             }
