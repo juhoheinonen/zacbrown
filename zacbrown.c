@@ -60,7 +60,7 @@ int main(void)
         }
     }
 
-    main_character player_character = {.position = {1.0f, 6.0 * 64.0f}, .speed = 0, .position = 0, .direction = RIGHT};
+    main_character player_character = {.position = {1.0f, 6.0f}, .horizontal_speed = 0, .position = 0, .direction = RIGHT};
 
     int framesCounter = 0;
     int framesSpeed = 10; // Number of spritesheet frames shown by second
@@ -78,24 +78,34 @@ int main(void)
 
         if (IsKeyDown(KEY_RIGHT))
         {
-            player_character.speed = 5;
+            player_character.horizontal_speed = 5;
             player_character.direction = RIGHT;
         }
         else if (IsKeyDown(KEY_LEFT))
         {
-            player_character.speed = 5;
+            player_character.horizontal_speed = 5;
             player_character.direction = LEFT;
         }
         else
         {
-            player_character.speed = 0;
+            player_character.horizontal_speed = 0;
         }
 
         // check if player feet hit blocking tile
         if (player_character.position.y) {
             // loop from player's x the player size. TODO: enable hitbox.
             for (int i = player_character.position.x; i < player_character.position.x + 64; i++) {
+                // check if just below character is blocking, otherwise it is falling
+                int y_below = player_character.position.y;
 
+                int x_calculated = player_character.position.x / GAME_MAP_WIDTH;
+                int y_calculated = y_below / GAME_MAP_HEIGHT;
+
+                if (game_map[x_calculated][y_calculated].tile_type == BROWN_GROUND) {
+                    player_character.vertical_speed = 0;
+                } else {
+                    player_character.vertical_speed = -5; // falling
+                }
             }
         }
 
@@ -151,8 +161,13 @@ int main(void)
         // Draw the brownie above brown_ground (y=0)
         //        DrawTextureRec(brownie_running, frameRec, (Vector2){position.x, 0}, WHITE);
 
+        // is player falling
+        if (player_character.vertical_speed < 0) {
+            player_character.position.y -= player_character.vertical_speed;
+        }
+
         // todo: check if on ground or in air
-        if (player_character.speed == 0)
+        if (player_character.horizontal_speed == 0)
         {
             Rectangle static_rec = {0.f, 0.f, (float)brownie_standing.width, (float)brownie_standing.height};
             DrawTextureRec(brownie_standing, static_rec, (Vector2){player_character.position.x, player_character.position.y}, WHITE);
@@ -161,12 +176,12 @@ int main(void)
         {
             if (player_character.direction == RIGHT)
             {
-                player_character.position.x += player_character.speed;
+                player_character.position.x += player_character.horizontal_speed;
                 DrawTextureRec(brownie_running, frameRec, (Vector2){player_character.position.x, player_character.position.y}, WHITE);
             }
             else if (player_character.direction == LEFT)
             {
-                player_character.position.x -= player_character.speed;
+                player_character.position.x -= player_character.horizontal_speed;
                 // Flip texture horizontally by using negative width
                 Rectangle flipped_frameRec = {frameRec.x + frameRec.width, frameRec.y, -frameRec.width, frameRec.height};
                 DrawTexturePro(brownie_running, flipped_frameRec,
