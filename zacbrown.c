@@ -9,6 +9,9 @@
 
 #define MAX_FRAME_SPEED 15
 #define MIN_FRAME_SPEED 1
+#define GAME_MAP_WIDTH 80
+#define GAME_MAP_HEIGHT 60
+#define TILE_SIZE 8
 
 int main(void)
 {
@@ -41,10 +44,10 @@ int main(void)
     int currentFrame = 0;
 
     // initialize map here
-    game_tile game_map[64][48];
-    for (int x = 0; x < 64; x++)
+    game_tile game_map[GAME_MAP_WIDTH][GAME_MAP_HEIGHT];
+    for (int x = 0; x < GAME_MAP_WIDTH; x++)
     {
-        for (int y = 0; y < 48; y++)
+        for (int y = 0; y < GAME_MAP_HEIGHT; y++)
         {
             if (y >= 45)
             {
@@ -64,9 +67,7 @@ int main(void)
 
     SetTargetFPS(60); // Set our game to run at 60 frames-per-second
     float deltaTime = 0.0f;
-    //--------------------------------------------------------------------------------------
-
-    int tile_size = 10;
+    //--------------------------------------------------------------------------------------    
 
     // Main game loop
     while (!WindowShouldClose()) // Detect window close button or ESC key
@@ -124,9 +125,9 @@ int main(void)
         ClearBackground(RAYWHITE);
 
         // Draw the map tiles
-        for (int x = 0; x < 64; x++)
+        for (int x = 0; x < GAME_MAP_WIDTH; x++)
         {
-            for (int y = 0; y < 48; y++)
+            for (int y = 0; y < GAME_MAP_HEIGHT; y++)
             {
                 Texture2D tile_texture;
                 if (game_map[x][y].tile_type == BROWN_GROUND)
@@ -138,8 +139,8 @@ int main(void)
                     tile_texture = light_sky_texture; // LoadTexture("img/light_sky.png");
                 }
 
-                Vector2 tile_position = {x * tile_size, y * tile_size};
-                Rectangle texture_rectangle = {(float)(x * tile_size), (float)(y * tile_size), tile_texture.width, tile_texture.height};
+                Vector2 tile_position = {x * TILE_SIZE, y * TILE_SIZE};
+                Rectangle texture_rectangle = {(float)(x * TILE_SIZE), (float)(y * TILE_SIZE), tile_texture.width, tile_texture.height};
                 DrawTextureRec(tile_texture, texture_rectangle, tile_position, WHITE);
             }
         }
