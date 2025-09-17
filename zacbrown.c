@@ -66,6 +66,8 @@ int main(void)
     float deltaTime = 0.0f;
     //--------------------------------------------------------------------------------------
 
+    int tile_size = 10;
+
     // Main game loop
     while (!WindowShouldClose()) // Detect window close button or ESC key
     {        
@@ -136,8 +138,8 @@ int main(void)
                     tile_texture = light_sky_texture; // LoadTexture("img/light_sky.png");
                 }
 
-                Vector2 tile_position = {x * 10, y * 10};
-                Rectangle texture_rectangle = {(float)(x * 10), (float)(y * 10), tile_texture.width, tile_texture.height};
+                Vector2 tile_position = {x * tile_size, y * tile_size};
+                Rectangle texture_rectangle = {(float)(x * tile_size), (float)(y * tile_size), tile_texture.width, tile_texture.height};
                 DrawTextureRec(tile_texture, texture_rectangle, tile_position, WHITE);
             }
         }
