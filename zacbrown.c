@@ -41,12 +41,12 @@ int main(void)
     int currentFrame = 0;
 
     // initialize map here
-    game_tile game_map[20][8];
-    for (int x = 0; x < 20; x++)
+    game_tile game_map[64][48];
+    for (int x = 0; x < 64; x++)
     {
-        for (int y = 0; y < 8; y++)
+        for (int y = 0; y < 48; y++)
         {
-            if (y == 7)
+            if (y >= 45)
             {
                 game_map[x][y] = (game_tile){.x = x, .y = y, .tile_type = BROWN_GROUND};
             }
@@ -63,12 +63,14 @@ int main(void)
     int framesSpeed = 10; // Number of spritesheet frames shown by second
 
     SetTargetFPS(60); // Set our game to run at 60 frames-per-second
-    //float deltaTime = 0.0f;
+    float deltaTime = 0.0f;
     //--------------------------------------------------------------------------------------
 
     // Main game loop
     while (!WindowShouldClose()) // Detect window close button or ESC key
     {        
+        deltaTime = GetFrameTime();
+
         float scale = MIN((float)GetScreenWidth() / gameScreenWidth, (float)GetScreenHeight() / gameScreenHeight);
 
         if (IsKeyDown(KEY_RIGHT))
@@ -120,9 +122,9 @@ int main(void)
         ClearBackground(RAYWHITE);
 
         // Draw the map tiles
-        for (int x = 0; x < 20; x++)
+        for (int x = 0; x < 64; x++)
         {
-            for (int y = 0; y < 8; y++)
+            for (int y = 0; y < 48; y++)
             {
                 Texture2D tile_texture;
                 if (game_map[x][y].tile_type == BROWN_GROUND)
@@ -134,8 +136,8 @@ int main(void)
                     tile_texture = light_sky_texture; // LoadTexture("img/light_sky.png");
                 }
 
-                Vector2 tile_position = {x * 64, y * 64};
-                Rectangle texture_rectangle = {(float)(x * 64), (float)(y * 64), tile_texture.width, tile_texture.height};
+                Vector2 tile_position = {x * 10, y * 10};
+                Rectangle texture_rectangle = {(float)(x * 10), (float)(y * 10), tile_texture.width, tile_texture.height};
                 DrawTextureRec(tile_texture, texture_rectangle, tile_position, WHITE);
             }
         }
@@ -167,7 +169,7 @@ int main(void)
             }
         }
 
-        DrawText("(c) Zachary Brownie sprite by Juho Antti Heinonen", screenWidth - 400, screenHeight - 20, 10, GRAY);
+        DrawText("(c) Zachary Brownie by Juho Antti Heinonen", screenWidth - 400, screenHeight - 20, 10, GRAY);
 
         EndTextureMode();
 
