@@ -57,7 +57,7 @@ int main(void)
         }
     }
 
-    main_character player_character = {.position = {1.0f, 6.0f}, .speed = 0, .direction = RIGHT};
+    main_character player_character = {.position = {1.0f, 6.0 * 64.0f}, .speed = 0, .direction = RIGHT};
 
     int framesCounter = 0;
     int framesSpeed = 10; // Number of spritesheet frames shown by second
@@ -72,12 +72,12 @@ int main(void)
 
         if (IsKeyDown(KEY_RIGHT))
         {
-            player_character.speed = 1;
+            player_character.speed = 5;
             player_character.direction = RIGHT;
         }
         else if (IsKeyDown(KEY_LEFT))
         {
-            player_character.speed = 1;
+            player_character.speed = 5;
             player_character.direction = LEFT;
         }
         else
@@ -122,9 +122,6 @@ int main(void)
                     tile_texture = LoadTexture("img/light_sky.png");
                 }
 
-                // texture_rectangle =
-                //  Color tile_color = (game_map[x][y].tile_type == BROWN_GROUND) ? BROWN : (Color){173, 216, 230, 255}; // light blue
-                // DrawRectangle(x * 64, y * 64, 64, 64, tile_color);
                 Vector2 tile_position = {x * 64, y * 64};
                 Rectangle texture_rectangle = {(float)(x * 64), (float)(y * 64), tile_texture.width, tile_texture.height};
                 DrawTextureRec(tile_texture, texture_rectangle, tile_position, WHITE);
@@ -138,25 +135,24 @@ int main(void)
         if (player_character.speed == 0)
         {
             Rectangle static_rec = {0.f, 0.f, (float)brownie_standing.width, (float)brownie_standing.height};
-            DrawTextureRec(brownie_standing, static_rec, (Vector2){player_character.position.x * 64, player_character.position.y * 64}, WHITE);
+            DrawTextureRec(brownie_standing, static_rec, (Vector2){player_character.position.x, player_character.position.y}, WHITE);
         }
         else
         {
             if (player_character.direction == RIGHT)
             {
-                player_character.position.x++;
-                DrawTextureRec(brownie_running, frameRec, (Vector2){player_character.position.x * 64, player_character.position.y * 64}, WHITE);
+                player_character.position.x += player_character.speed;
+                DrawTextureRec(brownie_running, frameRec, (Vector2){player_character.position.x, player_character.position.y}, WHITE);
             }
             else if (player_character.direction == LEFT)
             {
-                player_character.position.x--;
+                player_character.position.x -= player_character.speed;
                 // Flip texture horizontally by using negative width
                 Rectangle flipped_frameRec = {frameRec.x + frameRec.width, frameRec.y, -frameRec.width, frameRec.height};
-                DrawTexturePro(brownie_running, flipped_frameRec, 
-                              (Rectangle){player_character.position.x * 64, player_character.position.y * 64, frameRec.width, frameRec.height},
-                              (Vector2){0, 0}, 0.0f, WHITE);
+                DrawTexturePro(brownie_running, flipped_frameRec,
+                               (Rectangle){player_character.position.x, player_character.position.y, frameRec.width, frameRec.height},
+                               (Vector2){0, 0}, 0.0f, WHITE);
             }
-         
         }
 
         DrawText("(c) Zachary Brownie sprite by Juho Antti Heinonen", screenWidth - 400, screenHeight - 20, 10, GRAY);
