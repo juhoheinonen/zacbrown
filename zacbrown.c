@@ -95,16 +95,17 @@ int main(void)
         if (player_character.position.y) {
             // loop from player's x the player size. TODO: enable hitbox.
             for (int i = player_character.position.x; i < player_character.position.x + 64; i++) {
-                // check if just below character is blocking, otherwise it is falling
-                int y_below = player_character.position.y;
-
-                int x_calculated = player_character.position.x / GAME_MAP_WIDTH;
-                int y_calculated = y_below / GAME_MAP_HEIGHT;
-
+                // check if just below character is blocking, otherwise it is falling                
+                
+                int x_calculated = player_character.position.x * TILE_SIZE / GAME_MAP_WIDTH;
+                float height_calculated = 1.0 * TILE_SIZE / GAME_MAP_HEIGHT;
+                                   
+                int y_calculated = player_character.position.y * height_calculated + 5; // TODO: fix this, this is just guessing
+                
                 if (game_map[x_calculated][y_calculated].tile_type == BROWN_GROUND) {
                     player_character.vertical_speed = 0;
                 } else {
-                    player_character.vertical_speed = -5; // falling
+                    player_character.vertical_speed = -5;
                 }
             }
         }
