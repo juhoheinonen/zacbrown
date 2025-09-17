@@ -5,10 +5,8 @@ enum tile_type {
     LIGHT_SKY
 };
 
-enum direction {
-    //UP,
-    RIGHT,
-    //DOWN,
+enum direction {    
+    RIGHT,    
     LEFT
 };
 
@@ -21,5 +19,6 @@ typedef struct {
 typedef struct {
     Vector2 position;
     int speed;
+    int vertical_speed;
     enum direction direction;
 } main_character;

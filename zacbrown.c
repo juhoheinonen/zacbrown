@@ -60,7 +60,7 @@ int main(void)
         }
     }
 
-    main_character player_character = {.position = {1.0f, 6.0 * 64.0f}, .speed = 0, .direction = RIGHT};
+    main_character player_character = {.position = {1.0f, 6.0 * 64.0f}, .speed = 0, .position = 0, .direction = RIGHT};
 
     int framesCounter = 0;
     int framesSpeed = 10; // Number of spritesheet frames shown by second
@@ -93,7 +93,10 @@ int main(void)
 
         // check if player feet hit blocking tile
         if (player_character.position.y) {
+            // loop from player's x the player size. TODO: enable hitbox.
+            for (int i = player_character.position.x; i < player_character.position.x + 64; i++) {
 
+            }
         }
 
         // todo: check if player would hit wall
