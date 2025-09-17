@@ -63,11 +63,12 @@ int main(void)
     int framesSpeed = 10; // Number of spritesheet frames shown by second
 
     SetTargetFPS(60); // Set our game to run at 60 frames-per-second
+    //float deltaTime = 0.0f;
     //--------------------------------------------------------------------------------------
 
     // Main game loop
     while (!WindowShouldClose()) // Detect window close button or ESC key
-    {
+    {        
         float scale = MIN((float)GetScreenWidth() / gameScreenWidth, (float)GetScreenHeight() / gameScreenHeight);
 
         if (IsKeyDown(KEY_RIGHT))
@@ -85,6 +86,14 @@ int main(void)
             player_character.speed = 0;
         }
 
+        // check if player feet hit blocking tile
+        if (player_character.position.y) {
+
+        }
+
+        // todo: check if player would hit wall
+
+
         // Update
         //----------------------------------------------------------------------------------
         framesCounter++;
@@ -99,6 +108,9 @@ int main(void)
 
             frameRec.x = (float)currentFrame * (float)brownie_running.width / 6;
         }
+
+        Texture2D brown_ground_texture = LoadTexture("img/brown_ground.png");
+        Texture2D light_sky_texture = LoadTexture("img/light_sky.png");
 
         // Draw
         //----------------------------------------------------------------------------------
@@ -115,11 +127,11 @@ int main(void)
                 Texture2D tile_texture;
                 if (game_map[x][y].tile_type == BROWN_GROUND)
                 {
-                    tile_texture = LoadTexture("img/brown_ground.png");
+                    tile_texture = brown_ground_texture; // LoadTexture("img/brown_ground.png");
                 }
                 else if (game_map[x][y].tile_type == LIGHT_SKY)
                 {
-                    tile_texture = LoadTexture("img/light_sky.png");
+                    tile_texture = light_sky_texture; // LoadTexture("img/light_sky.png");
                 }
 
                 Vector2 tile_position = {x * 64, y * 64};
