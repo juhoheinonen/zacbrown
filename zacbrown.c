@@ -1,7 +1,6 @@
 #include "raylib.h"
-// #include <stdio.h>
 #include "raymath.h" // Required for: Vector2Clamp()
-
+#include <stdio.h>
 #include "custom_types.h"
 
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
@@ -20,7 +19,7 @@ void initialize_game_map(game_tile game_map[GAME_MAP_WIDTH][GAME_MAP_HEIGHT])
     {
         for (int y = 0; y < GAME_MAP_HEIGHT; y++)
         {
-            if (y >= 56)
+            if (y >= GAME_MAP_HEIGHT - 4)
             {
                 game_map[x][y] = (game_tile){.x = x, .y = y, .tile_type = BROWN_GROUND};
             }
@@ -82,15 +81,19 @@ int main(void)
 
         float scale = MIN((float)GetScreenWidth() / gameScreenWidth, (float)GetScreenHeight() / gameScreenHeight);
 
+        // debug code starts
+        if (IsKeyPressed(KEY_UP)) {
+            player_character.position.y--;
+        }
+        // debug code ends
+
         if (IsKeyDown(KEY_RIGHT))
         {
-            player_character.horizontal_speed = 5;
-            // player_character.direction = RIGHT;
+            player_character.horizontal_speed = 5;            
         }
         else if (IsKeyDown(KEY_LEFT))
         {
-            player_character.horizontal_speed = -5;
-            // player_character.direction = LEFT;
+            player_character.horizontal_speed = -5;            
         }
         else
         {
@@ -102,9 +105,7 @@ int main(void)
         {
             // loop from player's x the player size. TODO: enable hitbox.
             for (int i = player_character.position.x; i < player_character.position.x + 64; i++)
-            {
-                // check if just below character is blocking, otherwise it is falling
-
+            {                
                 int x_calculated = player_character.position.x * TILE_SIZE / GAME_MAP_WIDTH;
                 float height_calculated = 1.0 * TILE_SIZE / GAME_MAP_HEIGHT;
 
@@ -169,9 +170,6 @@ int main(void)
             }
         }
 
-        // Draw the brownie above brown_ground (y=0)
-        //        DrawTextureRec(brownie_running, frameRec, (Vector2){position.x, 0}, WHITE);
-
         // is player falling
         if (player_character.vertical_speed < 0)
         {
@@ -197,8 +195,12 @@ int main(void)
             DrawTexturePro(brownie_running, flipped_frameRec,
                            (Rectangle){player_character.position.x, player_character.position.y, frameRec.width, frameRec.height},
                            (Vector2){0, 0}, 0.0f, WHITE);
-        }
+        }        
 
+        char pc_position_information[50];
+        snprintf(pc_position_information, sizeof(pc_position_information), 
+                 "x: %.1f, y: %.1f", player_character.position.x, player_character.position.y);
+        DrawText(pc_position_information, 10, 10, 20, BLACK);
         DrawText("(c) Zachary Brownie by Juho Antti Heinonen", screenWidth - 400, screenHeight - 20, 10, GRAY);
 
         EndTextureMode();

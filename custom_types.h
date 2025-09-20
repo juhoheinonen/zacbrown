@@ -18,7 +18,6 @@ typedef struct {
 
 typedef struct {
     Vector2 position;
-    int horizontal_speed;
-    int vertical_speed;
-    //enum direction direction;
+    int horizontal_speed; // negative means to left, zero standing, positive to right
+    int vertical_speed; // negative means up, zero stay same, positive up    
 } main_character;
