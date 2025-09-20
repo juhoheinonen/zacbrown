@@ -13,6 +13,24 @@
 #define GAME_MAP_HEIGHT 60
 #define TILE_SIZE 8
 
+// Function to initialize the game map
+void initialize_game_map(game_tile game_map[GAME_MAP_WIDTH][GAME_MAP_HEIGHT]) {
+    for (int x = 0; x < GAME_MAP_WIDTH; x++)
+    {
+        for (int y = 0; y < GAME_MAP_HEIGHT; y++)
+        {
+            if (y >= 56)
+            {
+                game_map[x][y] = (game_tile){.x = x, .y = y, .tile_type = BROWN_GROUND};
+            }
+            else
+            {
+                game_map[x][y] = (game_tile){.x = x, .y = y, .tile_type = LIGHT_SKY};
+            }
+        }
+    }
+}
+
 int main(void)
 {
     // Initialization
@@ -45,20 +63,7 @@ int main(void)
 
     // initialize map here
     game_tile game_map[GAME_MAP_WIDTH][GAME_MAP_HEIGHT];
-    for (int x = 0; x < GAME_MAP_WIDTH; x++)
-    {
-        for (int y = 0; y < GAME_MAP_HEIGHT; y++)
-        {
-            if (y >= 56)
-            {
-                game_map[x][y] = (game_tile){.x = x, .y = y, .tile_type = BROWN_GROUND};
-            }
-            else
-            {
-                game_map[x][y] = (game_tile){.x = x, .y = y, .tile_type = LIGHT_SKY};
-            }
-        }
-    }
+    initialize_game_map(game_map);
 
     main_character player_character = {.position = {1.0f, 6.0f}, .horizontal_speed = 0, .position = 0, .direction = RIGHT};
 
