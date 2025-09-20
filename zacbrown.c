@@ -62,7 +62,6 @@ void check_ground_collision(main_character *player, game_tile game_map[GAME_MAP_
     // loop from player's x the player size.
 
     int below_tile_blocking = 0; // tile immediately below player character
-    int next_tile_blocking_found = 0;
 
     for (int i = player->position.x + player->hitbox.left_x; i < player->position.x + player->hitbox.right_x; i++)
     {
@@ -72,25 +71,15 @@ void check_ground_collision(main_character *player, game_tile game_map[GAME_MAP_
         int x_calculated = player->position.x * TILE_SIZE / GAME_MAP_WIDTH;
 
         below_tile_blocking = game_map[x_calculated][y_divided_by_tile_size].tile_type == BROWN_GROUND;
-        int next_tile_blocking = game_map[x_calculated][y_divided_by_tile_size + 1].tile_type == BROWN_GROUND;
 
         if (below_tile_blocking)
         {
             player->vertical_speed = 0;
             break;
         }
-        else if (next_tile_blocking)
-        {
-            // distance to next tile below
-            int y_modulo_by_tile_size = ((int)player->position.y + player->height_pixels) % TILE_SIZE;
-            player->vertical_speed = MIN(5, y_modulo_by_tile_size);
-        }
         else
         {
-            if (!next_tile_blocking_found)
-            {
-                player->vertical_speed = 5;
-            }
+            player->vertical_speed = 5;
         }
     }
 }
@@ -108,7 +97,6 @@ bool is_on_ground(main_character *player, game_tile game_map[GAME_MAP_WIDTH][GAM
         int x_calculated = player->position.x * TILE_SIZE / GAME_MAP_WIDTH;
 
         below_tile_blocking = game_map[x_calculated][y_divided_by_tile_size].tile_type == BROWN_GROUND;
-        int next_tile_blocking = game_map[x_calculated][y_divided_by_tile_size + 1].tile_type == BROWN_GROUND;
 
         if (below_tile_blocking)
         {
@@ -199,7 +187,7 @@ int main(void)
         {
             if (is_on_ground(&player_character, game_map))
             {
-                player_character.jumping_power = 10;
+                player_character.jumping_power = 20;
                 player_character.vertical_speed = -5;
             }
         }
@@ -249,10 +237,13 @@ int main(void)
         }
         else if (player_character.vertical_speed < 0) // going upwards
         {
-            if (player_character.jumping_power > 0) {
+            if (player_character.jumping_power > 0)
+            {
                 player_character.position.y += player_character.vertical_speed;
                 player_character.jumping_power--;
-            } else {
+            }
+            else
+            {
                 player_character.position.y += player_character.vertical_speed;
                 player_character.vertical_speed++;
             }
