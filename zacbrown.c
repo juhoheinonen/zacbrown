@@ -33,7 +33,7 @@ void initialize_game_map(game_tile game_map[GAME_MAP_WIDTH][GAME_MAP_HEIGHT])
 
 // Function to draw the map tiles
 void draw_map_tiles(game_tile game_map[GAME_MAP_WIDTH][GAME_MAP_HEIGHT], Texture2D brown_ground_texture, Texture2D light_sky_texture)
-{
+{        
     for (int x = 0; x < GAME_MAP_WIDTH; x++)
     {
         for (int y = 0; y < GAME_MAP_HEIGHT; y++)
@@ -91,7 +91,7 @@ int main(void)
     game_tile game_map[GAME_MAP_WIDTH][GAME_MAP_HEIGHT];
     initialize_game_map(game_map);
 
-    main_character player_character = {.position = {1.0f, 200.0f}, .horizontal_speed = 0, .position = 0};
+    main_character player_character = {.position = {1.0f, 300.0f}, .horizontal_speed = 0, .position = 0};
 
     int framesCounter = 0;
     int framesSpeed = 10; // Number of spritesheet frames shown by second
@@ -108,49 +108,55 @@ int main(void)
         float scale = MIN((float)GetScreenWidth() / gameScreenWidth, (float)GetScreenHeight() / gameScreenHeight);
 
         // debug code starts
-        if (IsKeyPressed(KEY_UP)) {
+        if (IsKeyPressed(KEY_UP))
+        {
             player_character.position.y--;
         }
         // debug code ends
 
         if (IsKeyDown(KEY_RIGHT))
         {
-            player_character.horizontal_speed = 5;            
+            player_character.horizontal_speed = 5;
         }
         else if (IsKeyDown(KEY_LEFT))
         {
-            player_character.horizontal_speed = -5;            
+            player_character.horizontal_speed = -5;
         }
         else
         {
             player_character.horizontal_speed = 0;
         }
 
+        char falling_information[50];
+
         // check if player feet hit blocking tile
-        if (player_character.position.y)
+        // loop from player's x the player size. TODO: enable hitbox.
+        for (int i = player_character.position.x; i < player_character.position.x + 64; i++)
         {
-            // loop from player's x the player size. TODO: enable hitbox.
-            for (int i = player_character.position.x; i < player_character.position.x + 64; i++)
-            {                
-                // distance to next tile
-                int distance_to_next_tile = (int)player_character.position.y % TILE_SIZE;
+            int brownie_height_pixels = 64;
 
-                // check tile type in next tile
-                int next_tile_y = ((int)player_character.position.y + distance_to_next_tile + 1) / TILE_SIZE;
+            // on which game_map tile we are
+            int y_divided_by_tile_size = ((int)player_character.position.y + brownie_height_pixels) / TILE_SIZE;
+            // distance to next tile below
+            int y_modulo_by_tile_size = ((int)player_character.position.y + brownie_height_pixels) % TILE_SIZE;
+            
+            snprintf(falling_information, sizeof(falling_information),
+                 "y/ts: %d, ymod: %d", y_divided_by_tile_size, y_modulo_by_tile_size);            
 
-                int x_calculated = player_character.position.x * TILE_SIZE / GAME_MAP_WIDTH;
-                float height_calculated = 1.0 * TILE_SIZE / GAME_MAP_HEIGHT;
+            int x_calculated = player_character.position.x * TILE_SIZE / GAME_MAP_WIDTH;
 
-                int y_calculated = player_character.position.y * height_calculated; // TODO: fix this, this is just guessing
+            int current_tile_blocking = game_map[x_calculated][y_divided_by_tile_size].tile_type == BROWN_GROUND;
+            int next_tile_blocking = game_map[x_calculated][y_divided_by_tile_size + 1].tile_type == BROWN_GROUND;                    
 
-                if (game_map[x_calculated][y_calculated].tile_type == BROWN_GROUND)
-                {
-                    player_character.vertical_speed = 0;
-                }
-                else
-                {
-                    player_character.vertical_speed = 1;
-                }
+            if (current_tile_blocking)
+            {
+                 player_character.vertical_speed = 0;
+            }
+            else if (next_tile_blocking)
+            {
+                player_character.vertical_speed = MIN(5, y_modulo_by_tile_size);
+            } else {
+                player_character.vertical_speed = 5;
             }
         }
 
@@ -186,7 +192,7 @@ int main(void)
         {
             player_character.position.y += player_character.vertical_speed;
         } // TODO: jumping, flying upwards?
-        
+
         if (player_character.horizontal_speed == 0)
         {
             Rectangle static_rec = {0.f, 0.f, (float)brownie_standing.width, (float)brownie_standing.height};
@@ -205,13 +211,14 @@ int main(void)
             DrawTexturePro(brownie_running, flipped_frameRec,
                            (Rectangle){player_character.position.x, player_character.position.y, frameRec.width, frameRec.height},
                            (Vector2){0, 0}, 0.0f, WHITE);
-        }        
+        }
 
         char pc_position_information[50];
-        snprintf(pc_position_information, sizeof(pc_position_information), 
+        snprintf(pc_position_information, sizeof(pc_position_information),
                  "x: %.1f, y: %.1f", player_character.position.x, player_character.position.y);
         DrawText(pc_position_information, 10, 10, 20, BLACK);
-        DrawText("(c) Zachary Brownie by Juho Antti Heinonen", screenWidth - 400, screenHeight - 20, 10, GRAY);
+        DrawText(falling_information, 350, 10, 20, BLACK);
+        //DrawText("(c) Zachary Brownie by Juho Antti Heinonen", screenWidth - 400, screenHeight - 20, 10, GRAY);
 
         EndTextureMode();
 
@@ -228,10 +235,10 @@ int main(void)
 
     // De-Initialization
     //--------------------------------------------------------------------------------------
-    UnloadTexture(brownie_running); // Texture unloading
-    UnloadTexture(brownie_standing); // Texture unloading
+    UnloadTexture(brownie_running);      // Texture unloading
+    UnloadTexture(brownie_standing);     // Texture unloading
     UnloadTexture(brown_ground_texture); // Texture unloading
-    UnloadTexture(light_sky_texture); // Texture unloading
+    UnloadTexture(light_sky_texture);    // Texture unloading
 
     CloseWindow(); // Close window and OpenGL context
     //--------------------------------------------------------------------------------------
