@@ -14,7 +14,8 @@
 #define TILE_SIZE 8
 
 // Function to initialize the game map
-void initialize_game_map(game_tile game_map[GAME_MAP_WIDTH][GAME_MAP_HEIGHT]) {
+void initialize_game_map(game_tile game_map[GAME_MAP_WIDTH][GAME_MAP_HEIGHT])
+{
     for (int x = 0; x < GAME_MAP_WIDTH; x++)
     {
         for (int y = 0; y < GAME_MAP_HEIGHT; y++)
@@ -65,18 +66,18 @@ int main(void)
     game_tile game_map[GAME_MAP_WIDTH][GAME_MAP_HEIGHT];
     initialize_game_map(game_map);
 
-    main_character player_character = {.position = {1.0f, 6.0f}, .horizontal_speed = 0, .position = 0, .direction = RIGHT};
+    main_character player_character = {.position = {1.0f, 6.0f}, .horizontal_speed = 0, .position = 0};
 
     int framesCounter = 0;
     int framesSpeed = 10; // Number of spritesheet frames shown by second
 
     SetTargetFPS(60); // Set our game to run at 60 frames-per-second
     float deltaTime = 0.0f;
-    //--------------------------------------------------------------------------------------    
+    //--------------------------------------------------------------------------------------
 
     // Main game loop
     while (!WindowShouldClose()) // Detect window close button or ESC key
-    {        
+    {
         deltaTime = GetFrameTime();
 
         float scale = MIN((float)GetScreenWidth() / gameScreenWidth, (float)GetScreenHeight() / gameScreenHeight);
@@ -84,12 +85,12 @@ int main(void)
         if (IsKeyDown(KEY_RIGHT))
         {
             player_character.horizontal_speed = 5;
-            player_character.direction = RIGHT;
+            // player_character.direction = RIGHT;
         }
         else if (IsKeyDown(KEY_LEFT))
         {
-            player_character.horizontal_speed = 5;
-            player_character.direction = LEFT;
+            player_character.horizontal_speed = -5;
+            // player_character.direction = LEFT;
         }
         else
         {
@@ -97,26 +98,30 @@ int main(void)
         }
 
         // check if player feet hit blocking tile
-        if (player_character.position.y) {
+        if (player_character.position.y)
+        {
             // loop from player's x the player size. TODO: enable hitbox.
-            for (int i = player_character.position.x; i < player_character.position.x + 64; i++) {
-                // check if just below character is blocking, otherwise it is falling                
-                
+            for (int i = player_character.position.x; i < player_character.position.x + 64; i++)
+            {
+                // check if just below character is blocking, otherwise it is falling
+
                 int x_calculated = player_character.position.x * TILE_SIZE / GAME_MAP_WIDTH;
                 float height_calculated = 1.0 * TILE_SIZE / GAME_MAP_HEIGHT;
-                                   
+
                 int y_calculated = player_character.position.y * height_calculated + 5; // TODO: fix this, this is just guessing
-                
-                if (game_map[x_calculated][y_calculated].tile_type == BROWN_GROUND) {
+
+                if (game_map[x_calculated][y_calculated].tile_type == BROWN_GROUND)
+                {
                     player_character.vertical_speed = 0;
-                } else {
+                }
+                else
+                {
                     player_character.vertical_speed = -5;
                 }
             }
         }
 
         // todo: check if player would hit wall
-
 
         // Update
         //----------------------------------------------------------------------------------
@@ -168,7 +173,8 @@ int main(void)
         //        DrawTextureRec(brownie_running, frameRec, (Vector2){position.x, 0}, WHITE);
 
         // is player falling
-        if (player_character.vertical_speed < 0) {
+        if (player_character.vertical_speed < 0)
+        {
             player_character.position.y -= player_character.vertical_speed;
         }
 
@@ -178,22 +184,19 @@ int main(void)
             Rectangle static_rec = {0.f, 0.f, (float)brownie_standing.width, (float)brownie_standing.height};
             DrawTextureRec(brownie_standing, static_rec, (Vector2){player_character.position.x, player_character.position.y}, WHITE);
         }
+        else if (player_character.horizontal_speed > 0)
+        {
+            player_character.position.x += player_character.horizontal_speed;
+            DrawTextureRec(brownie_running, frameRec, (Vector2){player_character.position.x, player_character.position.y}, WHITE);
+        }
         else
         {
-            if (player_character.direction == RIGHT)
-            {
-                player_character.position.x += player_character.horizontal_speed;
-                DrawTextureRec(brownie_running, frameRec, (Vector2){player_character.position.x, player_character.position.y}, WHITE);
-            }
-            else if (player_character.direction == LEFT)
-            {
-                player_character.position.x -= player_character.horizontal_speed;
-                // Flip texture horizontally by using negative width
-                Rectangle flipped_frameRec = {frameRec.x + frameRec.width, frameRec.y, -frameRec.width, frameRec.height};
-                DrawTexturePro(brownie_running, flipped_frameRec,
-                               (Rectangle){player_character.position.x, player_character.position.y, frameRec.width, frameRec.height},
-                               (Vector2){0, 0}, 0.0f, WHITE);
-            }
+            player_character.position.x += player_character.horizontal_speed;
+            // Flip texture horizontally by using negative width
+            Rectangle flipped_frameRec = {frameRec.x + frameRec.width, frameRec.y, -frameRec.width, frameRec.height};
+            DrawTexturePro(brownie_running, flipped_frameRec,
+                           (Rectangle){player_character.position.x, player_character.position.y, frameRec.width, frameRec.height},
+                           (Vector2){0, 0}, 0.0f, WHITE);
         }
 
         DrawText("(c) Zachary Brownie by Juho Antti Heinonen", screenWidth - 400, screenHeight - 20, 10, GRAY);

@@ -20,5 +20,5 @@ typedef struct {
     Vector2 position;
     int horizontal_speed;
     int vertical_speed;
-    enum direction direction;
+    //enum direction direction;
 } main_character;
