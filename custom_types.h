@@ -16,8 +16,17 @@ typedef struct {
     enum tile_type tile_type;
 } game_tile;
 
+typedef struct {    
+    int left_x;
+    int right_x;
+    int top_y;
+    int bottom_y;
+} hitbox;
+
 typedef struct {
     Vector2 position;
+    hitbox hitbox;
+    int height_pixels;    
     int horizontal_speed; // negative means to left, zero standing, positive to right
     int vertical_speed; // negative means up, zero stay same, positive up    
 } main_character;

@@ -33,7 +33,7 @@ void initialize_game_map(game_tile game_map[GAME_MAP_WIDTH][GAME_MAP_HEIGHT])
 
 // Function to draw the map tiles
 void draw_map_tiles(game_tile game_map[GAME_MAP_WIDTH][GAME_MAP_HEIGHT], Texture2D brown_ground_texture, Texture2D light_sky_texture)
-{        
+{
     for (int x = 0; x < GAME_MAP_WIDTH; x++)
     {
         for (int y = 0; y < GAME_MAP_HEIGHT; y++)
@@ -55,6 +55,38 @@ void draw_map_tiles(game_tile game_map[GAME_MAP_WIDTH][GAME_MAP_HEIGHT], Texture
     }
 }
 
+// Function to check ground collision and update vertical speed
+void check_ground_collision(main_character *player, game_tile game_map[GAME_MAP_WIDTH][GAME_MAP_HEIGHT])
+{
+    // check if player feet hit blocking tile
+    // loop from player's x the player size. TODO: enable hitbox.
+    for (int i = player->position.x; i < player->position.x + 64; i++)
+    {
+        // on which game_map tile we are
+        int y_divided_by_tile_size = ((int)player->position.y + player->height_pixels) / TILE_SIZE;
+        // distance to next tile below
+        int y_modulo_by_tile_size = ((int)player->position.y + player->height_pixels) % TILE_SIZE;
+
+        int x_calculated = player->position.x * TILE_SIZE / GAME_MAP_WIDTH;
+
+        int current_tile_blocking = game_map[x_calculated][y_divided_by_tile_size].tile_type == BROWN_GROUND;
+        int next_tile_blocking = game_map[x_calculated][y_divided_by_tile_size + 1].tile_type == BROWN_GROUND;
+
+        if (current_tile_blocking)
+        {
+            player->vertical_speed = 0;
+        }
+        else if (next_tile_blocking)
+        {
+            player->vertical_speed = MIN(5, y_modulo_by_tile_size);
+        }
+        else
+        {
+            player->vertical_speed = 5;
+        }
+    }
+}
+
 int main(void)
 {
     // Initialization
@@ -64,7 +96,7 @@ int main(void)
 
     // Enable config flags for resizable window and vertical synchro
     SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_VSYNC_HINT);
-    InitWindow((float)GetScreenWidth(), (float)GetScreenHeight(), "Zachary Brownie - sprite animation");
+    InitWindow((float)GetScreenWidth(), (float)GetScreenHeight(), "Zachary Brown");
     SetWindowMinSize(320, 240);
 
     int gameScreenWidth = 640;
@@ -80,9 +112,6 @@ int main(void)
     Texture2D brown_ground_texture = LoadTexture("img/brown_ground.png");
     Texture2D light_sky_texture = LoadTexture("img/light_sky.png");
 
-    // Vector2 position_standing = {350.0f, 150.0f};
-    //  Rectangle static_rec = {0.0f, 0.0f, (float)brownie_standing.width, (float)brownie_standing.height};
-
     Vector2 position = {350.0f, 280.0f};
     Rectangle frameRec = {0.0f, 0.0f, (float)brownie_running.width / 6, (float)brownie_running.height};
     int currentFrame = 0;
@@ -91,7 +120,12 @@ int main(void)
     game_tile game_map[GAME_MAP_WIDTH][GAME_MAP_HEIGHT];
     initialize_game_map(game_map);
 
-    main_character player_character = {.position = {1.0f, 300.0f}, .horizontal_speed = 0, .position = 0};
+    main_character player_character = {
+        .position = {1.0f, 300.0f},
+        .horizontal_speed = 0,
+        .vertical_speed = 0,
+        .height_pixels = 64,
+        .hitbox = {.left_x = 16, .right_x = 50, .top_y = 0, .bottom_y = 60}};
 
     int framesCounter = 0;
     int framesSpeed = 10; // Number of spritesheet frames shown by second
@@ -108,10 +142,10 @@ int main(void)
         float scale = MIN((float)GetScreenWidth() / gameScreenWidth, (float)GetScreenHeight() / gameScreenHeight);
 
         // debug code starts
-        if (IsKeyPressed(KEY_UP))
-        {
-            player_character.position.y--;
-        }
+        // if (IsKeyPressed(KEY_UP))
+        // {
+        //     player_character.position.y--;
+        // }
         // debug code ends
 
         if (IsKeyDown(KEY_RIGHT))
@@ -129,38 +163,14 @@ int main(void)
 
         char falling_information[50];
 
-        // check if player feet hit blocking tile
-        // loop from player's x the player size. TODO: enable hitbox.
-        for (int i = player_character.position.x; i < player_character.position.x + 64; i++)
-        {
-            int brownie_height_pixels = 64;
+        // Check ground collision and update vertical speed
+        check_ground_collision(&player_character, game_map);
 
-            // on which game_map tile we are
-            int y_divided_by_tile_size = ((int)player_character.position.y + brownie_height_pixels) / TILE_SIZE;
-            // distance to next tile below
-            int y_modulo_by_tile_size = ((int)player_character.position.y + brownie_height_pixels) % TILE_SIZE;
-            
-            snprintf(falling_information, sizeof(falling_information),
-                 "y/ts: %d, ymod: %d", y_divided_by_tile_size, y_modulo_by_tile_size);            
-
-            int x_calculated = player_character.position.x * TILE_SIZE / GAME_MAP_WIDTH;
-
-            int current_tile_blocking = game_map[x_calculated][y_divided_by_tile_size].tile_type == BROWN_GROUND;
-            int next_tile_blocking = game_map[x_calculated][y_divided_by_tile_size + 1].tile_type == BROWN_GROUND;                    
-
-            if (current_tile_blocking)
-            {
-                 player_character.vertical_speed = 0;
-            }
-            else if (next_tile_blocking)
-            {
-                player_character.vertical_speed = MIN(5, y_modulo_by_tile_size);
-            } else {
-                player_character.vertical_speed = 5;
-            }
-        }
-
-        // todo: check if player would hit wall
+        // Update debug information
+        int y_divided_by_tile_size = ((int)player_character.position.y + player_character.height_pixels) / TILE_SIZE;
+        int y_modulo_by_tile_size = ((int)player_character.position.y + player_character.height_pixels) % TILE_SIZE;
+        snprintf(falling_information, sizeof(falling_information),
+                 "y/ts: %d, ymod: %d", y_divided_by_tile_size, y_modulo_by_tile_size);
 
         // Update
         //----------------------------------------------------------------------------------
@@ -218,7 +228,7 @@ int main(void)
                  "x: %.1f, y: %.1f", player_character.position.x, player_character.position.y);
         DrawText(pc_position_information, 10, 10, 20, BLACK);
         DrawText(falling_information, 350, 10, 20, BLACK);
-        //DrawText("(c) Zachary Brownie by Juho Antti Heinonen", screenWidth - 400, screenHeight - 20, 10, GRAY);
+        // DrawText("(c) Zachary Brownie by Juho Antti Heinonen", screenWidth - 400, screenHeight - 20, 10, GRAY);
 
         EndTextureMode();
 
