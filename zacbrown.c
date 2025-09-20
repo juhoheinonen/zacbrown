@@ -59,30 +59,38 @@ void draw_map_tiles(game_tile game_map[GAME_MAP_WIDTH][GAME_MAP_HEIGHT], Texture
 void check_ground_collision(main_character *player, game_tile game_map[GAME_MAP_WIDTH][GAME_MAP_HEIGHT])
 {
     // check if player feet hit blocking tile
-    // loop from player's x the player size. TODO: enable hitbox.
+    // loop from player's x the player size.
+
+    int below_tile_blocking = 0; // tile immediately below player character
+    int next_tile_blocking_found = 0;
+
     for (int i = player->position.x + player->hitbox.left_x; i < player->position.x + player->hitbox.right_x; i++)
-    {
+    {        
         // on which game_map tile we are
         int y_divided_by_tile_size = ((int)player->position.y + player->height_pixels) / TILE_SIZE;
-        // distance to next tile below
-        int y_modulo_by_tile_size = ((int)player->position.y + player->height_pixels) % TILE_SIZE;
+        
 
         int x_calculated = player->position.x * TILE_SIZE / GAME_MAP_WIDTH;
 
-        int current_tile_blocking = game_map[x_calculated][y_divided_by_tile_size].tile_type == BROWN_GROUND;
+        below_tile_blocking = game_map[x_calculated][y_divided_by_tile_size].tile_type == BROWN_GROUND;
         int next_tile_blocking = game_map[x_calculated][y_divided_by_tile_size + 1].tile_type == BROWN_GROUND;
 
-        if (current_tile_blocking)
+        if (below_tile_blocking)
         {
             player->vertical_speed = 0;
+            break;
         }
         else if (next_tile_blocking)
         {
+            // distance to next tile below
+            int y_modulo_by_tile_size = ((int)player->position.y + player->height_pixels) % TILE_SIZE;
             player->vertical_speed = MIN(5, y_modulo_by_tile_size);
         }
         else
         {
-            player->vertical_speed = 5;
+            if (!next_tile_blocking_found) {
+                player->vertical_speed = 5;         
+            }
         }
     }
 }
@@ -125,6 +133,7 @@ int main(void)
         .horizontal_speed = 0,
         .vertical_speed = 0,
         .height_pixels = 64,
+        .jumping_power = 0,
         .hitbox = {.left_x = 16, .right_x = 50, .top_y = 0, .bottom_y = 60}};
 
     int framesCounter = 0;
@@ -161,12 +170,17 @@ int main(void)
             player_character.horizontal_speed = 0;
         }
 
-        char falling_information[50];
+        // jump
+        if (IsKeyDown(KEY_RIGHT_CONTROL))
+        {
 
+        }
+        
         // Check ground collision and update vertical speed
         check_ground_collision(&player_character, game_map);
 
         // Update debug information
+        char falling_information[50];
         int y_divided_by_tile_size = ((int)player_character.position.y + player_character.height_pixels) / TILE_SIZE;
         int y_modulo_by_tile_size = ((int)player_character.position.y + player_character.height_pixels) % TILE_SIZE;
         snprintf(falling_information, sizeof(falling_information),

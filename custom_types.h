@@ -26,7 +26,8 @@ typedef struct {
 typedef struct {
     Vector2 position;
     hitbox hitbox;
-    int height_pixels;    
+    int height_pixels;    // image height
     int horizontal_speed; // negative means to left, zero standing, positive to right
     int vertical_speed; // negative means up, zero stay same, positive up    
+    int jumping_power;
 } main_character;
