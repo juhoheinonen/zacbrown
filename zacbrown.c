@@ -60,7 +60,7 @@ void check_ground_collision(main_character *player, game_tile game_map[GAME_MAP_
 {
     // check if player feet hit blocking tile
     // loop from player's x the player size. TODO: enable hitbox.
-    for (int i = player->position.x; i < player->position.x + 64; i++)
+    for (int i = player->position.x + player->hitbox.left_x; i < player->position.x + player->hitbox.right_x; i++)
     {
         // on which game_map tile we are
         int y_divided_by_tile_size = ((int)player->position.y + player->height_pixels) / TILE_SIZE;
