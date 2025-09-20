@@ -65,10 +65,9 @@ void check_ground_collision(main_character *player, game_tile game_map[GAME_MAP_
     int next_tile_blocking_found = 0;
 
     for (int i = player->position.x + player->hitbox.left_x; i < player->position.x + player->hitbox.right_x; i++)
-    {        
+    {
         // on which game_map tile we are
         int y_divided_by_tile_size = ((int)player->position.y + player->height_pixels) / TILE_SIZE;
-        
 
         int x_calculated = player->position.x * TILE_SIZE / GAME_MAP_WIDTH;
 
@@ -88,11 +87,36 @@ void check_ground_collision(main_character *player, game_tile game_map[GAME_MAP_
         }
         else
         {
-            if (!next_tile_blocking_found) {
-                player->vertical_speed = 5;         
+            if (!next_tile_blocking_found)
+            {
+                player->vertical_speed = 5;
             }
         }
     }
+}
+
+bool is_on_ground(main_character *player, game_tile game_map[GAME_MAP_WIDTH][GAME_MAP_HEIGHT])
+{
+    int below_tile_blocking = 0; // tile immediately below player character
+    int next_tile_blocking_found = 0;
+
+    for (int i = player->position.x + player->hitbox.left_x; i < player->position.x + player->hitbox.right_x; i++)
+    {
+        // on which game_map tile we are
+        int y_divided_by_tile_size = ((int)player->position.y + player->height_pixels) / TILE_SIZE;
+
+        int x_calculated = player->position.x * TILE_SIZE / GAME_MAP_WIDTH;
+
+        below_tile_blocking = game_map[x_calculated][y_divided_by_tile_size].tile_type == BROWN_GROUND;
+        int next_tile_blocking = game_map[x_calculated][y_divided_by_tile_size + 1].tile_type == BROWN_GROUND;
+
+        if (below_tile_blocking)
+        {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 int main(void)
@@ -171,20 +195,27 @@ int main(void)
         }
 
         // jump
-        if (IsKeyDown(KEY_RIGHT_CONTROL))
+        if (IsKeyPressed(KEY_RIGHT_CONTROL))
         {
-
+            if (is_on_ground(&player_character, game_map))
+            {
+                player_character.jumping_power = 10;
+                player_character.vertical_speed = -5;
+            }
         }
-        
-        // Check ground collision and update vertical speed
-        check_ground_collision(&player_character, game_map);
+
+        if (player_character.jumping_power <= 0)
+        {
+            // Check ground collision and update vertical speed
+            check_ground_collision(&player_character, game_map);
+        }
 
         // Update debug information
         char falling_information[50];
         int y_divided_by_tile_size = ((int)player_character.position.y + player_character.height_pixels) / TILE_SIZE;
         int y_modulo_by_tile_size = ((int)player_character.position.y + player_character.height_pixels) % TILE_SIZE;
         snprintf(falling_information, sizeof(falling_information),
-                 "y/ts: %d, ymod: %d", y_divided_by_tile_size, y_modulo_by_tile_size);
+                 "y/ts: %d, ymod: %d, jump: %d", y_divided_by_tile_size, y_modulo_by_tile_size, player_character.jumping_power);
 
         // Update
         //----------------------------------------------------------------------------------
@@ -215,7 +246,17 @@ int main(void)
         if (player_character.vertical_speed > 0)
         {
             player_character.position.y += player_character.vertical_speed;
-        } // TODO: jumping, flying upwards?
+        }
+        else if (player_character.vertical_speed < 0) // going upwards
+        {
+            if (player_character.jumping_power > 0) {
+                player_character.position.y += player_character.vertical_speed;
+                player_character.jumping_power--;
+            } else {
+                player_character.position.y += player_character.vertical_speed;
+                player_character.vertical_speed++;
+            }
+        }
 
         if (player_character.horizontal_speed == 0)
         {
