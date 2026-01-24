@@ -8,11 +8,11 @@ import (
 
 // Constants
 const (
-	MaxFrameSpeed  = 15
-	MinFrameSpeed  = 1
-	GameMapWidth   = 80
-	GameMapHeight  = 60
-	TileSize       = 8
+	MaxFrameSpeed    = 15
+	MinFrameSpeed    = 1
+	GameMapWidth     = 80
+	GameMapHeight    = 60
+	TileSize         = 8
 	GameScreenWidth  = 640
 	GameScreenHeight = 480
 )
