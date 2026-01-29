@@ -105,7 +105,7 @@ func drawMapTiles(gameMap *[GameMapWidth][GameMapHeight]GameTile, brownGroundTex
 func checkGroundCollision(player *MainCharacter, gameMap *[GameMapWidth][GameMapHeight]GameTile) {
 	for i := int(player.Position.X) + player.Hitbox.LeftX; i < int(player.Position.X)+player.Hitbox.RightX; i++ {
 		yDividedByTileSize := (int(player.Position.Y) + player.HeightPixels) / TileSize
-		xCalculated := int(player.Position.X) * TileSize / GameMapWidth
+		xCalculated := int(float64(i) * float64(TileSize) / float64(GameMapWidth))
 
 		if xCalculated >= 0 && xCalculated < GameMapWidth && yDividedByTileSize >= 0 && yDividedByTileSize < GameMapHeight {
 			belowTileBlocking := gameMap[xCalculated][yDividedByTileSize].TileType == BrownGround
@@ -124,7 +124,7 @@ func checkGroundCollision(player *MainCharacter, gameMap *[GameMapWidth][GameMap
 func isOnGround(player *MainCharacter, gameMap *[GameMapWidth][GameMapHeight]GameTile) bool {
 	for i := int(player.Position.X) + player.Hitbox.LeftX; i < int(player.Position.X)+player.Hitbox.RightX; i++ {
 		yDividedByTileSize := (int(player.Position.Y) + player.HeightPixels) / TileSize
-		xCalculated := int(player.Position.X) * TileSize / GameMapWidth
+		xCalculated := int(float64(i) * float64(TileSize) / float64(GameMapWidth))
 
 		if xCalculated >= 0 && xCalculated < GameMapWidth && yDividedByTileSize >= 0 && yDividedByTileSize < GameMapHeight {
 			if gameMap[xCalculated][yDividedByTileSize].TileType == BrownGround {
