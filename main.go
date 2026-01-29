@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"os"
+	"strings"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
@@ -61,6 +63,32 @@ func initializeGameMap() [GameMapWidth][GameMapHeight]GameTile {
 			} else {
 				gameMap[x][y] = GameTile{X: x, Y: y, TileType: LightSky}
 			}
+		}
+	}
+
+	return gameMap
+}
+
+func initializeGameMapFromFile() [GameMapWidth][GameMapHeight]GameTile {
+	var gameMap [GameMapWidth][GameMapHeight]GameTile
+
+	data, err := os.ReadFile("data/map.txt")
+	if err != nil {
+		panic(err)
+	}
+
+	lines := strings.Split(string(data), "\n")
+
+	for rowIndex, line := range lines {
+		for colIndex, char := range line {
+
+			var tileType TileType
+			if char == '1' {
+				tileType = LightSky
+			} else if char == '0' {
+				tileType = BrownGround
+			}
+			gameMap[colIndex][rowIndex] = GameTile{X: colIndex, Y: rowIndex, TileType: tileType}
 		}
 	}
 
@@ -157,7 +185,8 @@ func main() {
 	currentFrame := 0
 
 	// Initialize map
-	gameMap := initializeGameMap()
+	gameMap := initializeGameMapFromFile()
+	// gameMap := initializeGameMap()
 
 	// Initialize player character
 	playerCharacter := MainCharacter{
