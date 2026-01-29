@@ -52,23 +52,6 @@ type MainCharacter struct {
 	JumpingPower    int
 }
 
-// initializeGameMap creates the game map with ground at the bottom
-func initializeGameMap() [GameMapWidth][GameMapHeight]GameTile {
-	var gameMap [GameMapWidth][GameMapHeight]GameTile
-
-	for x := 0; x < GameMapWidth; x++ {
-		for y := 0; y < GameMapHeight; y++ {
-			if y >= GameMapHeight-4 {
-				gameMap[x][y] = GameTile{X: x, Y: y, TileType: BrownGround}
-			} else {
-				gameMap[x][y] = GameTile{X: x, Y: y, TileType: LightSky}
-			}
-		}
-	}
-
-	return gameMap
-}
-
 func initializeGameMapFromFile() [GameMapWidth][GameMapHeight]GameTile {
 	var gameMap [GameMapWidth][GameMapHeight]GameTile
 
@@ -184,9 +167,8 @@ func main() {
 	}
 	currentFrame := 0
 
-	// Initialize map
+	// Initialize map from file
 	gameMap := initializeGameMapFromFile()
-	// gameMap := initializeGameMap()
 
 	// Initialize player character
 	playerCharacter := MainCharacter{
